@@ -2,33 +2,45 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types/auth';
 
-type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
-  Home: undefined;
-};
 
 const LoginScreen = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  
   const handleLogin = async () => {
     try {
-      const res = await fetch('http://10.0.2.2:8080/api/auth/login', {
+      const payload = {
+        mobileNumber,
+        password,
+      };
+  
+      const res = await fetch('http://10.0.2.2:8080/api/users/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobileNumber, password }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
-
-      if (!res.ok) throw new Error('Invalid credentials');
-
-      const data = await res.json();
-      Alert.alert('Success', 'Logged in successfully!');
-      navigation.navigate('Home');
+  
+      const text = await res.text();
+  
+      if (!res.ok) {
+        throw new Error(text);
+      }
+  
+      if (text === 'Login successful') {
+        Alert.alert('Success', text);
+        navigation.navigate('Home');
+      } else {
+        // This will handle cases like 'Incorrect password' or 'Mobile number not registered'
+        Alert.alert('Login Failed', text);
+      }
     } catch (err: any) {
-      Alert.alert('Login Failed', err.message || 'Something went wrong');
+      Alert.alert('Login Error', err.message || 'Something went wrong');
     }
   };
 

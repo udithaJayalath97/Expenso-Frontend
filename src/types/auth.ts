@@ -12,3 +12,8 @@ export interface LoginRequest {
     };
   }
   
+  export type RootStackParamList = {
+    Login: undefined;
+    SignUp: undefined;
+    Home: undefined; 
+  };

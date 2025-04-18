@@ -1,20 +1,49 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { login } from '../services/authService';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../types/auth'
 
 const SignInScreen: React.FC = () => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [userName, setUser] = useState('');
+  
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleSignIn = async () => {
     try {
-      const res = await login({ mobile, password });
-      Alert.alert('Success', `Welcome ${res.user.name}`);
-      // navigate to Home screen if needed
+      const payload = {
+        username: userName,
+        password: password,
+        mobileNumber: mobile,
+      };
+  
+      const response = await fetch('http://10.0.2.2:8080/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const contentType = response.headers.get('content-type');
+
+    let message;
+    if (contentType && contentType.includes('application/json')) {
+      const resData = await response.json();
+      message = resData.message || 'Registered successfully';
+    } else {
+      message = await response.text(); // Plain text like 'User registered successfully'
+    }
+
+      Alert.alert('Success', message);
+      navigation.navigate('Login'); // Navigate to Login screen after successful registration
     } catch (err: any) {
-      Alert.alert('Login Failed', err.message || 'Invalid credentials');
+      Alert.alert('Registration Failed', err.message);
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -32,8 +61,8 @@ const SignInScreen: React.FC = () => {
         style={styles.input}
         placeholder="Name"
         keyboardType="default"
-        value={mobile}
-        onChangeText={setMobile}
+        value={userName}
+        onChangeText={setUser}
       />
 
       <TextInput
