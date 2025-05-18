@@ -16,4 +16,10 @@ export interface LoginRequest {
     Login: undefined;
     SignUp: undefined;
     Home: undefined; 
+    Persons: undefined;
+    Activity: undefined;
+    Account: undefined;
+    Budgets: undefined;
+    AddBudgets: undefined;
+    Notifications: undefined;
   };
