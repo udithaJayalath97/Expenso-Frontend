@@ -3,42 +3,43 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/auth';
-
+import { useUser, UserData } from '../contexts/UserContext';
 
 const LoginScreen = () => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const { setUser } = useUser();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   
   const handleLogin = async () => {
     try {
-      const payload = {
-        mobileNumber,
-        password,
-      };
-  
+    
       const res = await fetch('http://10.0.2.2:8080/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ mobileNumber, password }),
       });
   
-      const text = await res.text();
-  
       if (!res.ok) {
-        throw new Error(text);
+        // Response not OK - get error text and show alert
+        const errorText = await res.text();
+        Alert.alert('Login Failed', errorText);
+        return;
       }
-  
-      if (text === 'Login successful') {
-        Alert.alert('Success', text);
-        navigation.navigate('Home');
-      } else {
-        // This will handle cases like 'Incorrect password' or 'Mobile number not registered'
-        Alert.alert('Login Failed', text);
-      }
+
+      // Try parse JSON user data
+      const data: UserData = await res.json();
+
+      // Save user data to context
+      setUser(data);
+
+      Alert.alert('Login Successful', `Welcome, ${data.username}!`);
+
+      // Navigate to home or dashboard screen
+      navigation.navigate('Home');
     } catch (err: any) {
       Alert.alert('Login Error', err.message || 'Something went wrong');
     }
