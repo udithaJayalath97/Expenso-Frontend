@@ -1,3 +1,4 @@
+import { Budget } from '../contexts/UserContext';
 export interface LoginRequest {
     mobile: string;
     password: string;
@@ -22,4 +23,5 @@ export interface LoginRequest {
     Budgets: undefined;
     AddBudgets: undefined;
     Notifications: undefined;
+    BudgetDetails: { budget: Budget };
   };

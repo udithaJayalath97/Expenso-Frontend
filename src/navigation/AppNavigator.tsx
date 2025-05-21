@@ -8,8 +8,7 @@ import NotificationScreen from '../screens/NotificationScreen';
 import ActivityScreen from '../screens/ActivityScreen';
 import AccountScreen from '../screens/AccountScreen';
 import AddBudgetScreen from '../screens/AddBudgetScreen';
-import BudgetScreen from '../screens/BudgetsScreen';
-
+import BudgetDetailsScreen from '../screens/BudgetDetailsScreen'
 
 
 
@@ -26,7 +25,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Activity" component={ActivityScreen} />
         <Stack.Screen name="Account" component={AccountScreen} />
         <Stack.Screen name="AddBudgets" component={AddBudgetScreen} />
-        <Stack.Screen name="Budgets" component={BudgetScreen} />
+        <Stack.Screen name="BudgetDetails" component={BudgetDetailsScreen} />
         
         
     
