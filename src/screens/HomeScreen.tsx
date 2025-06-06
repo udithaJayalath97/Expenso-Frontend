@@ -5,15 +5,20 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FooterMenu from '../components/FooterMenu';
 import { RootStackParamList } from '../types/auth'; 
 import { useUser } from '../contexts/UserContext';
-import { Ionicons } from '@expo/vector-icons';
 import { Budget } from '../contexts/UserContext';
 
 const HomeScreen = () => {
-  const { user } = useUser();
+  const { user, reloadUserContext } = useUser();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBudgets, setFilteredBudgets] = useState(user?.budgets || []);
+  const userId = user?.id;
+useEffect(() => {
+  
+  if (!userId) return;
 
+  reloadUserContext(userId);
+},[reloadUserContext]);
 
 useEffect(() => {
   if (!user?.budgets) return;
@@ -70,6 +75,13 @@ return (
       contentContainerStyle={{ paddingBottom: 20 }}
       ListEmptyComponent={<Text>No budgets found.</Text>}
     />
+    <TouchableOpacity
+      style={styles.createButton}
+      onPress={() => navigation.navigate('AddBudgets')}
+      activeOpacity={0.7}
+    >
+      <Text style={styles.createButtonText}>+</Text>
+    </TouchableOpacity>
     <FooterMenu />
   </View>
 );
@@ -135,6 +147,27 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 6,
     marginBottom: 4,
+  },
+  createButton: {
+    position: 'absolute',
+    bottom: 70,   // adjust as needed, above footer if present
+    right: 20,
+    backgroundColor: '#007bff',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5, // shadow for Android
+    shadowColor: '#000', // shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  createButtonText: {
+    fontSize: 32,
+    color: '#fff',
+    lineHeight: 32,
   },
 });
 

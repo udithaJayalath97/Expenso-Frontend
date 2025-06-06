@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState,useCallback, useContext, ReactNode } from 'react';
 
 export interface AssignedUser {
   id: number;
@@ -34,13 +34,30 @@ export interface UserData {
 interface UserContextType {
   user: UserData | null;
   setUser: (user: UserData | null) => void;
+  reloadUserContext: (userId: number) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserData | null>(null);
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  
+
+  const reloadUserContext = useCallback(async (userId: number) => {
+    try {
+      const response = await fetch(`http://10.0.2.2:8080/api/${userId}/budgets`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user data: ${response.status}`);
+      }
+      const data: UserData = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      setUser(null);
+    }
+  }, []);
+
+  return <UserContext.Provider value={{ user, setUser, reloadUserContext }}>{children}</UserContext.Provider>;
 };
 
 export const useUser = (): UserContextType => {

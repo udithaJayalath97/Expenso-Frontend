@@ -1,21 +1,56 @@
-import React, { useLayoutEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useLayoutEffect, useEffect, useState  } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/auth'; 
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-
+import { useRoute, useNavigation, RouteProp, useFocusEffect } from '@react-navigation/native';
+import FooterMenu from '../components/FooterMenu';
+import { useUser } from '../contexts/UserContext';
+import Icon from '@expo/vector-icons/FontAwesome';
 type BudgetDetailsRouteProp = RouteProp<RootStackParamList, 'BudgetDetails'>;
 type BudgetDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BudgetDetails'>;
 
-const BudgetDetailsScreen : React.FC = () => {
+const BudgetDetailsScreen: React.FC = () => {
+  const { user, reloadUserContext } = useUser();
   const route = useRoute<BudgetDetailsRouteProp>();
   const navigation = useNavigation<BudgetDetailsNavigationProp>();
+  const userId = user?.id;
 
-  const { budget } = route.params;
+   // Original budget passed via route param
+   const { budget: initialBudget } = route.params;
 
-  // Set screen title dynamically to budget name
+   // State to hold fresh budget data from context
+   const [budget, setBudget] = useState(initialBudget);
+ 
+   useFocusEffect(
+    React.useCallback(() => {
+      if (!user?.id) return;
+      reloadUserContext(user.id); // Reload user context to get updated budget details
+    }, [reloadUserContext, user?.id])
+  );
+ 
+   useEffect(() => {
+     if (!user?.budgets) return;
+ 
+     // Find the updated budget by id from user.budgets
+     const updatedBudget = user.budgets.find(b => b.id === initialBudget.id);
+     if (updatedBudget) {
+       setBudget(updatedBudget);
+     }
+   }, [user?.budgets, initialBudget.id]);
+  
   useLayoutEffect(() => {
-    navigation.setOptions({ title: budget.name });
+    //navigation.setOptions({ title: budget.name });
+    navigation.setOptions({
+      title: budget.name,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('UserContribution',{ budget})}
+          style={styles.contributionButton}
+        >
+          <Icon name="user" size={24} color="#007bff" />
+        </TouchableOpacity>
+      ),
+    });
   }, [navigation, budget.name]);
 
   return (
@@ -33,13 +68,25 @@ const BudgetDetailsScreen : React.FC = () => {
           data={budget.expenses}
           keyExtractor={item => item.expenseId.toString()}
           renderItem={({ item }) => (
-            <View style={styles.expenseItem}>
+            <TouchableOpacity
+              style={styles.expenseItem}
+              onPress={() => navigation.navigate('ExpenseDetails', { expense: item })}
+            >
               <Text>{item.description}</Text>
               <Text>Amount: {item.amount}</Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
+
+      <TouchableOpacity
+        style={styles.createButton}
+        onPress={() => navigation.navigate('AddExpense', { budget: budget})}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.createButtonText}>+</Text>
+      </TouchableOpacity>
+      <FooterMenu />
     </View>
   );
 };
@@ -55,5 +102,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#eef',
     borderRadius: 8,
     marginBottom: 10,
+  },
+  createButton: {
+    position: 'absolute',
+    bottom: 70,
+    right: 20,
+    backgroundColor: '#007bff',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  createButtonText: {
+    fontSize: 32,
+    color: '#fff',
+    lineHeight: 32,
+  },
+  contributionButton: {
+    marginRight: 10,
+  },
+  contributionButtonText: {
+    fontSize: 16,
+    color: '#007bff',
   },
 });

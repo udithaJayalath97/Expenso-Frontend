@@ -1,4 +1,5 @@
 import { Budget } from '../contexts/UserContext';
+import { Expense} from '../contexts/UserContext';
 export interface LoginRequest {
     mobile: string;
     password: string;
@@ -23,5 +24,8 @@ export interface LoginRequest {
     Budgets: undefined;
     AddBudgets: undefined;
     Notifications: undefined;
+    AddExpense: { budget: Budget };
     BudgetDetails: { budget: Budget };
+    ExpenseDetails: { expense: Expense };
+    UserContribution: { budget: Budget };
   };
