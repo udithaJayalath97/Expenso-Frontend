@@ -8,10 +8,10 @@ import NotificationScreen from '../screens/NotificationScreen';
 import ActivityScreen from '../screens/ActivityScreen';
 import AccountScreen from '../screens/AccountScreen';
 import AddBudgetScreen from '../screens/AddBudgetScreen';
-import BudgetScreen from '../screens/BudgetsScreen';
-
-
-
+import BudgetDetailsScreen from '../screens/BudgetDetailsScreen'
+import ExpenseDetailsScreen from '../screens/ExpenseDetailsScreen'
+import AddExpenseScreen from '../screens/AddExpenseScreen';
+import UserContributionScreen from '../screens/UserContributionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,10 +26,10 @@ const AppNavigator = () => {
         <Stack.Screen name="Activity" component={ActivityScreen} />
         <Stack.Screen name="Account" component={AccountScreen} />
         <Stack.Screen name="AddBudgets" component={AddBudgetScreen} />
-        <Stack.Screen name="Budgets" component={BudgetScreen} />
-        
-        
-    
+        <Stack.Screen name="BudgetDetails" component={BudgetDetailsScreen} />
+        <Stack.Screen name="ExpenseDetails" component={ExpenseDetailsScreen} />
+        <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
+        <Stack.Screen name="UserContribution" component={UserContributionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

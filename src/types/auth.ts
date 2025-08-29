@@ -1,3 +1,5 @@
+import { Budget } from '../contexts/UserContext';
+import { Expense} from '../contexts/UserContext';
 export interface LoginRequest {
     mobile: string;
     password: string;
@@ -11,6 +13,20 @@ export interface LoginRequest {
       mobile: string;
     };
   }
+
+  export interface ExpensePayload{
+    description: string;
+    amount: number;
+    budgetId: number;
+    createdBy: number | undefined;
+    userIds: number[];
+    receipt?: {
+      uri: string;
+      type: string;
+      name: string;
+    };
+    [key: string]: any;
+  }
   
   export type RootStackParamList = {
     Login: undefined;
@@ -22,4 +38,8 @@ export interface LoginRequest {
     Budgets: undefined;
     AddBudgets: undefined;
     Notifications: undefined;
+    AddExpense: { budget: Budget };
+    BudgetDetails: { budget: Budget };
+    ExpenseDetails: { expense: Expense };
+    UserContribution: { budget: Budget };
   };
