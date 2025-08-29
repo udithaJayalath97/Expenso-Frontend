@@ -1,11 +1,12 @@
-import React, { useLayoutEffect, useEffect, useState  } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useLayoutEffect, useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/auth'; 
 import { useRoute, useNavigation, RouteProp, useFocusEffect } from '@react-navigation/native';
 import FooterMenu from '../components/FooterMenu';
 import { useUser } from '../contexts/UserContext';
 import Icon from '@expo/vector-icons/FontAwesome';
+import axios from 'axios';
 type BudgetDetailsRouteProp = RouteProp<RootStackParamList, 'BudgetDetails'>;
 type BudgetDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BudgetDetails'>;
 
@@ -20,9 +21,19 @@ const BudgetDetailsScreen: React.FC = () => {
 
    // State to hold fresh budget data from context
    const [budget, setBudget] = useState(initialBudget);
+
+   const deleteBudget = async (budgetId: number) => {
+      try {
+        await axios.delete(`http://10.0.2.2:8080/api/delete/budget/${budgetId}`);
+        return true;
+      } catch (error) {
+        console.error('Failed to delete budget:', error);
+        return false;
+      }
+    };
  
    useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       if (!user?.id) return;
       reloadUserContext(user.id); // Reload user context to get updated budget details
     }, [reloadUserContext, user?.id])
@@ -43,12 +54,40 @@ const BudgetDetailsScreen: React.FC = () => {
     navigation.setOptions({
       title: budget.name,
       headerRight: () => (
+      <View style={{ flexDirection: 'row', gap: 15, marginRight: 10 }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('UserContribution',{ budget})}
-          style={styles.contributionButton}
+          onPress={() => navigation.navigate('UserContribution', { budget })}
         >
           <Icon name="user" size={24} color="#007bff" />
         </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              'Confirm Delete',
+              'Are you sure you want to delete this budget?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    const success = await deleteBudget(budget.id);
+                    if (success) {
+                      
+                      navigation.goBack();
+                    } else {
+                      Alert.alert('Error', 'Failed to delete budget.');
+                    }
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <Icon name="trash" size={24} color="red" />
+        </TouchableOpacity>
+      </View>
       ),
     });
   }, [navigation, budget.name]);

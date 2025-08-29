@@ -69,34 +69,7 @@ const AccountScreen = () => {
         )}
       </View>
 
-      {/* Security Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Security</Text>
-        <TextInput
-          placeholder="Current Password"
-          secureTextEntry
-          style={styles.input}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-        <TextInput
-          placeholder="New Password"
-          secureTextEntry
-          style={styles.input}
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-        <TextInput
-          placeholder="Confirm New Password"
-          secureTextEntry
-          style={styles.input}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-          <Text style={styles.buttonText}>Change Password</Text>
-        </TouchableOpacity>
-      </View>
+      
     </ScrollView>
 
     <FooterMenu />

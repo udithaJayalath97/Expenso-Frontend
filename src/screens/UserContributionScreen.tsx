@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/auth';
 import FooterMenu from '../components/FooterMenu';
 import { AssignedUser, Expense } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext';
 
 
 type UserContributionRouteProp = RouteProp<RootStackParamList, 'UserContribution'>;
@@ -13,9 +14,11 @@ type UserContributionNavigationProp = NativeStackNavigationProp<RootStackParamLi
 const UserContributionScreen: React.FC = () => {
   const route = useRoute<UserContributionRouteProp>();
   const navigation = useNavigation<UserContributionNavigationProp>();
-  
+  const { user, reloadUserContext } = useUser();
   const { budget } = route.params; // Get the budget passed from the previous screen
   const [userContributions, setUserContributions] = useState<{ user: any; contribution: number }[]>([]);
+
+
 
   useFocusEffect(
     React.useCallback(() => {

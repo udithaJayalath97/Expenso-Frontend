@@ -24,11 +24,25 @@ export interface Budget {
   expenses: Expense[];
 }
 
+export interface Activity{
+  description: string;
+}
+
+export interface Notifications{
+  id: number;
+  userId: number;
+  message: string;
+  readStatus: boolean;
+  createdAt: Date;
+}
+
 export interface UserData {
   id: number;
   username: string;
   mobileNumber: string;
   budgets: Budget[];
+  activity: Activity[];
+  notifications: Notifications[];
 }
 
 interface UserContextType {

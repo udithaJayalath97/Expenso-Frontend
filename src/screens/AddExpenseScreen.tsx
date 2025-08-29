@@ -16,6 +16,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/auth'; // Adjust import path
 import { useUser } from '../contexts/UserContext';
 
+
+
 type AddExpenseRouteProp = RouteProp<RootStackParamList, 'AddExpense'>;
 type AddExpenseNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddExpense'>;
 
@@ -24,11 +26,12 @@ const AddExpenseScreen: React.FC = () => {
   const navigation = useNavigation<AddExpenseNavigationProp>();
 
   const { budget } = route.params; // Pass selected budget from previous screen
-  const { user } = useUser();
+  const { user, reloadUserContext } = useUser();
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  
 
   // Users to assign are the assignedUsers from the budget
   const allUsers = budget.assignedUsers || [];
@@ -43,6 +46,8 @@ const AddExpenseScreen: React.FC = () => {
       prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
     );
   };
+
+  
 
   const handleAddExpense = async () => {
     if (!description.trim() || !amount || selectedUserIds.length === 0) {
@@ -63,7 +68,10 @@ const AddExpenseScreen: React.FC = () => {
       budgetId: budget.id,
       createdBy: user?.id,
       userIds: selectedUserIds,
+      
     };
+
+     
 
     try {
       const response = await fetch('http://10.0.2.2:8080/api/expense/create', {
@@ -79,6 +87,8 @@ const AddExpenseScreen: React.FC = () => {
       if (!response.ok) {
         throw new Error(responseText || 'Something went wrong');
       }
+
+      await reloadUserContext(user?.id!);
 
       Alert.alert('Success', responseText);
       navigation.navigate('BudgetDetails',{ budget: budget}); // go back after successful add
@@ -105,6 +115,8 @@ const AddExpenseScreen: React.FC = () => {
       </TouchableOpacity>
     );
   };
+
+  
 
   return (
     <KeyboardAvoidingView
@@ -148,6 +160,8 @@ const AddExpenseScreen: React.FC = () => {
           style={{ marginBottom: 20 }}
           ListEmptyComponent={<Text>No users found matching your search.</Text>}
         />
+
+        
 
         <TouchableOpacity style={styles.button} onPress={handleAddExpense}>
           <Text style={styles.buttonText}>Add Expense</Text>

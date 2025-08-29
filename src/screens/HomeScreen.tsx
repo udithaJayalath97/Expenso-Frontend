@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FooterMenu from '../components/FooterMenu';
 import { RootStackParamList } from '../types/auth'; 
@@ -13,27 +13,26 @@ const HomeScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBudgets, setFilteredBudgets] = useState(user?.budgets || []);
   const userId = user?.id;
-useEffect(() => {
-  
-  if (!userId) return;
 
-  reloadUserContext(userId);
-},[reloadUserContext]);
-
-useEffect(() => {
-  if (!user?.budgets) return;
-
-  const filtered = user.budgets.filter(budget =>
-    budget.name.toLowerCase().includes(searchTerm.toLowerCase())
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        reloadUserContext(userId);
+      }
+    }, [userId])
   );
-  setFilteredBudgets(filtered);
-}, [searchTerm, user?.budgets]);
 
-// Header left: logo (replace with your logo image)
-// Header right: menu icon, opens drawer or menu
-const onMenuPress = () => {
-  // navigation.toggleDrawer(); // if you use drawer navigation
-};
+  
+  useEffect(() => {
+    if (!user?.budgets) return;
+
+    const filtered = user.budgets.filter(budget =>
+      budget.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredBudgets(filtered);
+  }, [searchTerm, user?.budgets]);
+
+
 
 const renderBudget = ({ item }: { item: Budget }) => (
   <TouchableOpacity

@@ -13,6 +13,20 @@ export interface LoginRequest {
       mobile: string;
     };
   }
+
+  export interface ExpensePayload{
+    description: string;
+    amount: number;
+    budgetId: number;
+    createdBy: number | undefined;
+    userIds: number[];
+    receipt?: {
+      uri: string;
+      type: string;
+      name: string;
+    };
+    [key: string]: any;
+  }
   
   export type RootStackParamList = {
     Login: undefined;
