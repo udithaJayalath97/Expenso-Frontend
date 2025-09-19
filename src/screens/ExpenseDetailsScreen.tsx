@@ -78,6 +78,9 @@ const ExpenseDetailsScreen: React.FC = () => {
       <Text style={styles.label}>Amount:</Text>
       <Text style={styles.value}>{expense.amount}</Text>
 
+      <Text style={styles.label}>Created by:</Text>
+      <Text style={styles.value}>{expense.createdBy.username}</Text>
+
       <Text style={styles.label}>Assigned Users:</Text>
       {expense.assignedUsers?.length ? (
         <FlatList

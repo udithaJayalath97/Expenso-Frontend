@@ -2,12 +2,16 @@ import React, {useState} from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView, } from 'react-native';
 import FooterMenu from '../components/FooterMenu';
 import { useUser, Budget, UserData } from '../contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/auth';
 
 const AccountScreen = () => {
   const { user } = useUser();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   if (!user) {
     return <Text>Loading user data...</Text>;
@@ -40,6 +44,7 @@ const AccountScreen = () => {
   );
 
   return (
+    
     <View style={{ flex: 1 }}>
     <ScrollView style={styles.container}>
       {/* User info */}
@@ -54,6 +59,10 @@ const AccountScreen = () => {
         <Text style={styles.username}>{user.username}</Text>
       </View>
 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.buttonText}>Log Out</Text>
+      </TouchableOpacity>
+
       {/* Budgets */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>My Budgets</Text>
@@ -67,10 +76,14 @@ const AccountScreen = () => {
             scrollEnabled={false} // disable scrolling inside ScrollView
           />
         )}
+        
       </View>
 
       
+
+      
     </ScrollView>
+    
 
     <FooterMenu />
     </View>
