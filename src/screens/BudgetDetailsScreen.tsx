@@ -113,6 +113,7 @@ const BudgetDetailsScreen: React.FC = () => {
             >
               <Text>{item.description}</Text>
               <Text>Amount: {item.amount}</Text>
+              <Text>Paid by: {item.createdBy.username}</Text>
             </TouchableOpacity>
           )}
         />
